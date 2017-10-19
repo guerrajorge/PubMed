@@ -2,3 +2,4 @@
 record_results/
 results.xml
 logfile_*
+*pycache*
