@@ -1,9 +1,11 @@
 import csv
+import re
 import gensim
 import nltk
 from gensim import corpora, models
 from nltk.util import ngrams
 from nltk.tokenize import word_tokenize
+from nltk.tokenize import RegexpTokenizer
 from nltk.corpus import stopwords
 
 
@@ -20,26 +22,28 @@ def topic_modeling(dataset):
     # each consisting of only title, abstract, or paper
 
     # String to Vectors
-    # remove common words and tokenize
-    # stoplist = set('a about above after again all am among an and any are as at be because been before being below between both but by can do did does doing down during each few for from had has have he her here hers him herself himself how i if in into is its itself me much more most my myself no nor not of off on once only or other our ours out over own same she should so some such than that the their they theirs them then there hey this these those through to too under until up very was we were what when where which while who why with would you your yours yourself just via it vs.'.split())
-    # stop = stopwords.words('english') + string.punctuation
-    # texts = [[word for word in title.lower().split() if word not in stoplist] for title in titles]
+    # remove stopwords
     text_nostopwords = [
         ' '.join([word for word in title.lower().split() if word not in stopwords.words('english') and len(word) > 2])
         for title in titles]
 
-    # generate ngram, currently n = 2
-    text_ngram = []
+    # remove punctuation
+    text_nopunc = []
     for text in text_nostopwords:
-        text_ngram.append(get_ngrams(text, 2))
+        text_nopunc.append(re.sub('\W+', ' ', text))
+
+    # tokenize, generate ngram, currently n = 2
+    text_processed = []
+    for text in text_nopunc:
+        text_processed.append(get_ngrams(text, 2))
 
     # remove words that appear only once
     from collections import defaultdict
     frequency = defaultdict(int)
-    for text in text_ngram:
+    for text in text_processed:
         for token in text:
             frequency[token] += 1
-    text_freq = [[token for token in text if frequency[token] > 1] for text in text_ngram]
+    text_freq = [[token for token in text if frequency[token] > 1] for text in text_processed]
 
     # create dictionary
     dictionary = corpora.Dictionary(text_freq)
@@ -54,7 +58,7 @@ def topic_modeling(dataset):
 
     # hdp
     # hdp transformation, train HDP model, tuning gamma and alpha needed
-    hdp = models.HdpModel(corpus_tfidf, id2word=dictionary, gamma=1, alpha=1)
+    hdp = models.HdpModel(corpus_tfidf, id2word=dictionary, gamma=1, alpha = 1)
     # ordering the topics
     hdp.optimal_ordering()
     # show topics with top 10 most probable words
