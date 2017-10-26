@@ -56,7 +56,92 @@ def topic_modeling(dataset):
     tfidf = models.TfidfModel(corpus)
     corpus_tfidf = tfidf[corpus]
 
-    # # hdp
+    # LDA
+    # building model
+    lda = models.LdaModel(corpus_tfidf, id2word=dictionary, num_topics=10, alpha='auto', eval_every=5)
+    corpus_lda = lda[corpus_tfidf]
+    
+    #saving and printing
+    docs = []
+    for doc in corpus_lda:
+        docs.append(doc)
+    
+    topic_id = 0  # belongs to which topic
+    article_topic = [[] * 2 for i in range(len(docs))]
+    for i in range(len(docs)):
+        j = 0
+        max_score = 0
+        while j < len(docs[i]):
+            if abs(docs[i][j][1]) > max_score:
+                max_score = docs[i][j][1]
+                topic_id = docs[i][j][0]
+            j = j + 1
+        article_topic[i].append((i, topic_id))
+    
+    title_topic = list(zip(titles, article_topic))
+    
+    # number of topics
+    topic_list = []
+    for i in range(len(article_topic)):
+        topic_list.append(article_topic[i][0][0])
+    topic_list = set(topic_list)
+    
+    
+    filename1 = 'topic_results/lda_title_topics.csv'
+    with open(filename1, 'w') as outcsv:
+        writer = csv.writer(outcsv, lineterminator='\n')
+        writer.writerow(['Topic_ID', 'Title'])
+        for item in title_topic:
+            writer.writerow([item[1][0][1], item[0]])
+    
+    topics_desc = lda.print_topics(num_topics=-1, num_words=5)
+    filename2 = 'topic_results/lda_topics_desc.csv'
+    with open(filename2, 'w') as outcsv:
+        writer = csv.writer(outcsv, lineterminator='\n')
+        writer.writerow(['Topic_Desc'])
+        for item in topics_desc:
+            writer.writerow([item])
+
+    # # LSI
+    # # building model
+    # lsi = models.LsiModel(corpus_tfidf, id2word=dictionary, num_topics=10)
+    # corpus_lsi = lsi[corpus_tfidf]
+
+    # # saving and printing
+    # docs = []
+    # for doc in corpus_lsi:
+    #     docs.append(doc)
+
+    # topic_id = 0  # belongs to which topic
+    # article_topic = [[] * 2 for i in range(len(docs))]
+    # for i in range(len(docs)):
+    #     j = 0
+    #     max_score = 0
+    #     while j < len(docs[i]):
+    #         if abs(docs[i][j][1]) > max_score:
+    #             max_score = docs[i][j][1]
+    #             topic_id = docs[i][j][0]
+    #         j = j + 1
+    #     article_topic[i].append((i, topic_id))
+
+    # title_topic = list(zip(titles, article_topic))
+
+    # filename1 = 'topic_results/lsi_title_topics.csv'
+    # with open(filename1, 'w') as outcsv:
+    #     writer = csv.writer(outcsv, lineterminator='\n')
+    #     writer.writerow(['Topic_ID', 'Title'])
+    #     for item in title_topic:
+    #         writer.writerow([item[1][0][1], item[0]])
+
+    # topics_desc = lsi.print_topics(num_topics=-1, num_words=5)
+    # filename2 = 'topic_results/lsi_topics_desc.csv'
+    # with open(filename2, 'w') as outcsv:
+    #     writer = csv.writer(outcsv, lineterminator='\n')
+    #     writer.writerow(['Topic_Desc'])
+    #     for item in topics_desc:
+    #         writer.writerow([item])
+
+    # # HDP
     # # hdp transformation, train HDP model, tuning gamma and alpha needed
     # hdp = models.HdpModel(corpus_tfidf, id2word=dictionary, gamma=1, alpha=1)
     # # a trained HDP model can be used to transform the corpus into HDP topic distributions
@@ -103,44 +188,5 @@ def topic_modeling(dataset):
     #     writer.writerow(['Topic_Desc'])
     #     for item in topics_desc:
     #         writer.writerow([item])
-
-    # LSI
-    # building model
-    lsi = models.LsiModel(corpus_tfidf, id2word=dictionary, num_topics=10)
-    corpus_lsi = lsi[corpus_tfidf]
-
-    # saving and printing
-    docs = []
-    for doc in corpus_lsi:
-        docs.append(doc)
-
-    topic_id = 0  # belongs to which topic
-    article_topic = [[] * 2 for i in range(len(docs))]
-    for i in range(len(docs)):
-        j = 0
-        max_score = 0
-        while j < len(docs[i]):
-            if abs(docs[i][j][1]) > max_score:
-                max_score = docs[i][j][1]
-                topic_id = docs[i][j][0]
-            j = j + 1
-        article_topic[i].append((i, topic_id))
-
-    title_topic = list(zip(titles, article_topic))
-
-    filename1 = 'topic_results/lsi_title_topics.csv'
-    with open(filename1, 'w') as outcsv:
-        writer = csv.writer(outcsv, lineterminator='\n')
-        writer.writerow(['Topic_ID', 'Title'])
-        for item in title_topic:
-            writer.writerow([item[1][0][1], item[0]])
-
-    topics_desc = lsi.print_topics(num_topics=-1, num_words=5)
-    filename2 = 'topic_results/lsi_topics_desc.csv'
-    with open(filename2, 'w') as outcsv:
-        writer = csv.writer(outcsv, lineterminator='\n')
-        writer.writerow(['Topic_Desc'])
-        for item in topics_desc:
-            writer.writerow([item])
 
     return len(title_topic)
