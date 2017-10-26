@@ -56,64 +56,91 @@ def topic_modeling(dataset):
     tfidf = models.TfidfModel(corpus)
     corpus_tfidf = tfidf[corpus]
 
-    # hdp
-    # hdp transformation, train HDP model, tuning gamma and alpha needed
-    hdp = models.HdpModel(corpus_tfidf, id2word=dictionary, gamma=1, alpha = 1)
-    # ordering the topics
-    hdp.optimal_ordering()
-    # show topics with top 10 most probable words
-    topics_desc = hdp.print_topics(num_topics=-1, num_words=10)
-    # hdp.update(corpus_tfidf)
-    # create new corpus over the original corpus
-    # a trained HDP model can be used to transform the corpus into HDP topic distributions
-    corpus_hdp = hdp[corpus_tfidf]
-    # hdp.update(corpus_hdp)
-    # hdp.evaluate_test_corpus(corpus_hdp)
-    # article belongs to which topic
+    # # hdp
+    # # hdp transformation, train HDP model, tuning gamma and alpha needed
+    # hdp = models.HdpModel(corpus_tfidf, id2word=dictionary, gamma=1, alpha=1)
+    # # a trained HDP model can be used to transform the corpus into HDP topic distributions
+    # corpus_hdp = hdp[corpus_tfidf]
+    #
+    # # article belongs to which topic
+    # docs = []
+    # for doc in corpus_hdp:
+    #     docs.append(doc)
+    #
+    # # calculate largest score to decide which article belongs to which topic
+    # topic_id = 0  # belongs to which topic
+    # # topic_ids = []
+    # article_topic = [[] * 2 for i in range(len(docs))]
+    # for i in range(len(docs)):
+    #     j = 0
+    #     max_score = 0
+    #     while j < len(docs[i]):
+    #         if abs(docs[i][j][1]) > max_score:
+    #             max_score = docs[i][j][1]
+    #             topic_id = docs[i][j][0]
+    #         # topic_ids.append(topic_id)
+    #         j = j + 1
+    #     article_topic[i].append((i, topic_id))
+    #
+    # # show topics with top 10 related words
+    # # topics_desc = hdp.print_topics(topics=len(set(topic_ids)), topn=10)
+    #
+    # title_topic = list(zip(titles, article_topic))
+    # title_topic = title_topic[1:]
+    #
+    # # write file
+    # filename1 = 'topic_results/title_topics.csv'
+    # with open(filename1, 'w') as outcsv:
+    #     writer = csv.writer(outcsv, lineterminator='\n')
+    #     writer.writerow(['Topic_ID', 'Title'])
+    #     for item in title_topic:
+    #         writer.writerow([item[1][0][1], item[0]])
+    #
+    # topics_desc = hdp.print_topics(num_topics=-1, num_words=10)
+    # filename2 = 'topic_results/topics_desc.csv'
+    # with open(filename2, 'w') as outcsv:
+    #     writer = csv.writer(outcsv, lineterminator='\n')
+    #     writer.writerow(['Topic_Desc'])
+    #     for item in topics_desc:
+    #         writer.writerow([item])
+
+    # LSI
+    # building model
+    lsi = models.LsiModel(corpus_tfidf, id2word=dictionary, num_topics=10)
+    corpus_lsi = lsi[corpus_tfidf]
+
+    # saving and printing
     docs = []
-    for doc in corpus_hdp:
+    for doc in corpus_lsi:
         docs.append(doc)
 
-    # calculate largest score to decide which article belongs to which topic
     topic_id = 0  # belongs to which topic
-    # topic_ids = []
     article_topic = [[] * 2 for i in range(len(docs))]
     for i in range(len(docs)):
         j = 0
         max_score = 0
         while j < len(docs[i]):
-            if docs[i][j][1] > max_score:
+            if abs(docs[i][j][1]) > max_score:
                 max_score = docs[i][j][1]
                 topic_id = docs[i][j][0]
-            # topic_ids.append(topic_id)
             j = j + 1
         article_topic[i].append((i, topic_id))
 
-    # show topics with top 10 related words
-    # topics_desc = hdp.print_topics(topics=len(set(topic_ids)), topn=10)
-
     title_topic = list(zip(titles, article_topic))
-    title_topic = title_topic[1:]
 
-    # write file
-    filename1 = 'topic_results/title_topics.csv'
+    filename1 = 'topic_results/lsi_title_topics.csv'
     with open(filename1, 'w') as outcsv:
         writer = csv.writer(outcsv, lineterminator='\n')
         writer.writerow(['Topic_ID', 'Title'])
         for item in title_topic:
             writer.writerow([item[1][0][1], item[0]])
 
-    filename2 = 'topic_results/topics_desc.csv'
+    topics_desc = lsi.print_topics(num_topics=-1, num_words=5)
+    filename2 = 'topic_results/lsi_topics_desc.csv'
     with open(filename2, 'w') as outcsv:
         writer = csv.writer(outcsv, lineterminator='\n')
         writer.writerow(['Topic_Desc'])
         for item in topics_desc:
             writer.writerow([item])
 
-    # filename3 = 'topic_score_' + str(year) + '.csv'
-    # with open(filename3, 'w') as outcsv:
-    #     writer = csv.writer(outcsv, lineterminator = '\n')
-    #     writer.writerow(['Topic_Desc'])
-    #     for item in docs:
-    #         writer.writerow([item])
-    return len(topics_desc)
+    return len(title_topic)
