@@ -7,12 +7,13 @@ from nltk.util import ngrams
 from nltk.tokenize import word_tokenize
 from nltk.tokenize import RegexpTokenizer
 from nltk.corpus import stopwords
+from utils.np_extractor import np_extractor
 
 
-# generate ngram, currently n = 2
-def get_ngrams(text, n):
-    n_grams = ngrams(word_tokenize(text), n)
-    return [' '.join(grams) for grams in n_grams]
+# # generate ngram, currently n = 2
+# def get_ngrams(text, n):
+#     n_grams = ngrams(word_tokenize(text), n)
+#     return [' '.join(grams) for grams in n_grams]
 
 
 def topic_modeling(dataset):
@@ -32,10 +33,10 @@ def topic_modeling(dataset):
     for text in text_nostopwords:
         text_nopunc.append(re.sub('\W+', ' ', text))
 
-    # tokenize, generate ngram, currently n = 2
-    text_processed = []
-    for text in text_nopunc:
-        text_processed.append(get_ngrams(text, 2))
+    # tokenize, generate noun phrase
+	text_processed = []
+	for text in text_nopunc:
+    	text_processed.append(np_extractor(text))
 
     # remove words that appear only once
     from collections import defaultdict
