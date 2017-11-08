@@ -19,23 +19,24 @@ from utils.np_extractor import np_extractor
 def topic_modeling(dataset):
     # read data
     titles = dataset['title']
+    # abstracts = dataset['abstracts']
     # corpus of documents
     # each consisting of only title, abstract, or paper
 
     # String to Vectors
     # remove stopwords
     text_nostopwords = [
-        ' '.join([word for word in title.lower().split() if word not in stopwords.words('english') and len(word) > 2])
+        ' '.join([word for word in title.lower().split() if word not in stopwords.words('english')])
         for title in titles]
 
-    # remove punctuation
-    text_nopunc = []
-    for text in text_nostopwords:
-        text_nopunc.append(re.sub('\W+', ' ', text))
+    # # remove punctuation
+    # text_nopunc = []
+    # for text in text_nostopwords:
+    #     text_nopunc.append(re.sub('\W+', ' ', text))
 
     # tokenize, generate noun phrase
 	text_processed = []
-	for text in text_nopunc:
+	for text in text_nostopwords:
     	text_processed.append(np_extractor(text))
 
     # remove words that appear only once
@@ -59,7 +60,7 @@ def topic_modeling(dataset):
 
     # LDA
     # building model
-    lda = models.LdaModel(corpus_tfidf, id2word=dictionary, num_topics=10, alpha='auto', eval_every=5)
+    lda = models.LdaModel(corpus_tfidf, id2word=dictionary, num_topics=10, alpha='auto', eval_every=5, iterations=100)
     corpus_lda = lda[corpus_tfidf]
     
     #saving and printing
@@ -88,7 +89,7 @@ def topic_modeling(dataset):
     topic_list = set(topic_list)
     
     
-    filename1 = 'topic_results/lda_title_topics.csv'
+    filename1 = 'topic_results/lda_title_topics_10.csv'
     with open(filename1, 'w') as outcsv:
         writer = csv.writer(outcsv, lineterminator='\n')
         writer.writerow(['Topic_ID', 'Title'])
@@ -96,7 +97,7 @@ def topic_modeling(dataset):
             writer.writerow([item[1][0][1], item[0]])
     
     topics_desc = lda.print_topics(num_topics=-1, num_words=5)
-    filename2 = 'topic_results/lda_topics_desc.csv'
+    filename2 = 'topic_results/lda_topics_desc_10.csv'
     with open(filename2, 'w') as outcsv:
         writer = csv.writer(outcsv, lineterminator='\n')
         writer.writerow(['Topic_Desc'])
@@ -190,4 +191,4 @@ def topic_modeling(dataset):
     #     for item in topics_desc:
     #         writer.writerow([item])
 
-    return len(title_topic)
+    return len(topic_list)
