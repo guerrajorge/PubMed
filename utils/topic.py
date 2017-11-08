@@ -35,8 +35,8 @@ def topic_modeling(dataset):
     #     text_nopunc.append(re.sub('\W+', ' ', text))
 
     # tokenize, generate noun phrase
-	text_processed = []
-	for text in text_nostopwords:
+    text_processed = []
+    for text in text_nostopwords:
     	text_processed.append(np_extractor(text))
 
     # remove words that appear only once
