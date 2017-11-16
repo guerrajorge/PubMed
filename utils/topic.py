@@ -191,8 +191,6 @@ def topic_modeling(dataset):
     #     for item in topics_desc:
     #         writer.writerow([item])
 
-<<<<<<< HEAD
-
     # Evaluation
     # similarity score between mesh terms and topic keywords
     # calculate accuracy
@@ -209,8 +207,4 @@ def topic_modeling(dataset):
 	    model_wv = models.Word2Vec(meshterms, min_count=1, hs=1, negative=0)
 	    score = score + numpy.mean(model_wv.score(topic_keywords))*len(meshterms)
 	accuracy = score/len(titles)
-
     return accuracy
-=======
-    return len(topic_list)
->>>>>>> b7f6f7968a3a699fc2f613980a6b4aacc2a2c92c
