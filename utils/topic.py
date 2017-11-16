@@ -8,6 +8,7 @@ from nltk.tokenize import word_tokenize
 from nltk.tokenize import RegexpTokenizer
 from nltk.corpus import stopwords
 from utils.np_extractor import np_extractor
+import numpy
 
 
 # # generate ngram, currently n = 2
