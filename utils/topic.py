@@ -35,8 +35,8 @@ def topic_modeling(dataset):
     #     text_nopunc.append(re.sub('\W+', ' ', text))
 
     # tokenize, generate noun phrase
-	text_processed = []
-	for text in text_nostopwords:
+    text_processed = []
+    for text in text_nostopwords:
     	text_processed.append(np_extractor(text))
 
     # remove words that appear only once
@@ -191,6 +191,7 @@ def topic_modeling(dataset):
     #     for item in topics_desc:
     #         writer.writerow([item])
 
+<<<<<<< HEAD
 
     # Evaluation
     # similarity score between mesh terms and topic keywords
@@ -210,3 +211,6 @@ def topic_modeling(dataset):
 	accuracy = score/len(titles)
 
     return accuracy
+=======
+    return len(topic_list)
+>>>>>>> b7f6f7968a3a699fc2f613980a6b4aacc2a2c92c
