@@ -194,17 +194,17 @@ def topic_modeling(dataset):
     # Evaluation
     # similarity score between mesh terms and topic keywords
     # calculate accuracy
-	score = 0
-	for i in range(0,10):
-	    meshterms = list()
-	    topic_keywords = list()
-	    for j in range(len(title_topic)):
-	        if title_topic[j][1][0][1] == i:
-	            meshterms.append(title_topic[j][2])
-	            meshterms = [x for x in meshterms if str(x) != 'nan']
-	    for k in range(0,10):
-	        topic_keywords.append(lda.show_topic(i)[0][0])
-	    model_wv = models.Word2Vec(meshterms, min_count=1, hs=1, negative=0)
-	    score = score + numpy.mean(model_wv.score(topic_keywords))*len(meshterms)
-	accuracy = score/len(titles)
+    score = 0
+    for i in range(0,10):
+    	meshterms = list()
+    	topic_keywords = list()
+    	for j in range(len(title_topic)):
+    		if title_topic[j][1][0][1] == i:
+    			meshterms.append(title_topic[j][2])
+    			meshterms = [x for x in meshterms if str(x) != 'nan'
+    	for k in range(0,10):
+    		topic_keywords.append(lda.show_topic(i)[0][0])
+    	model_wv = models.Word2Vec(meshterms, min_count=1, hs=1, negative=0)
+    	score = score + numpy.mean(model_wv.score(topic_keywords))*len(meshterms)
+    	accuracy = score/len(titles)
     return accuracy
