@@ -204,7 +204,7 @@ def topic_modeling(dataset):
     			meshterms.append(title_topic[j][2])
     			meshterms = [x for x in meshterms if str(x) != 'nan'
     	for k in range(0,10):
-    		topic_keywords.append(lda.show_topic(i)[0][0])
+    		topic_keywords.append(lda.show_topic(i)[k][0])
     	model_wv = models.Word2Vec(meshterms, min_count=1, hs=1, negative=0)
     	score = score + numpy.mean(model_wv.score(topic_keywords))*len(meshterms)
     	accuracy = score/len(titles)
