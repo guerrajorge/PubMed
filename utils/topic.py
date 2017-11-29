@@ -194,18 +194,48 @@ def topic_modeling(dataset):
 
     # Evaluation
     # similarity score between mesh terms and topic keywords
-    # calculate accuracy
-    score = 0
-    for i in range(0,10):
-    	meshterms = list()
-    	topic_keywords = list()
-    	for j in range(len(title_topic)):
-    		if title_topic[j][1][0][1] == i:
-    			meshterms.append(title_topic[j][2])
-    			meshterms = [x for x in meshterms if str(x) != 'nan'
-    	for k in range(0,10):
-    		topic_keywords.append(lda.show_topic(i)[k][0])
-    	model_wv = models.Word2Vec(meshterms, min_count=1, hs=1, negative=0)
-    	score = score + numpy.mean(model_wv.score(topic_keywords))*len(meshterms)
-    	accuracy = score/len(titles)
+    # calculate accuracy using Word2vec model
+    # score = 0
+    # for i in range(0,10):
+    # 	meshterms = list()
+    # 	topic_keywords = list()
+    # 	for j in range(len(title_topic)):
+    # 		if title_topic[j][1][0][1] == i:
+    # 			meshterms.append(title_topic[j][2])
+    # 			meshterms = [x for x in meshterms if str(x) != 'nan'
+    # 	for k in range(0,10):
+    # 		topic_keywords.append(lda.show_topic(i)[k][0])
+    # 	model_wv = models.Word2Vec(meshterms, min_count=1, hs=1, negative=0)
+    # 	score = score + numpy.mean(model_wv.score(topic_keywords))*len(meshterms)
+    # 	accuracy = score/len(titles)
+
+
+    # calculate accuracy using keyword occurrence
+	score = 0
+	for i in range(0,10):
+	    score_topic = 0
+	    meshterms = list()
+	    newMeSH = list()
+	    topic_keywords = list()
+	    #get all keywords for this topic
+	    for k in range(0,10):
+	        topic_keywords.append(lda.show_topic(i)[k][0])
+	    #get all mesh terms for this topic
+	    for j in range(len(title_topic)):
+	        if title_topic[j][1][0][1] == i:
+	            meshterms.append(title_topic[j][2])
+	            meshterms = [x for x in meshterms if str(x) != 'nan']
+	        for i in range(len(meshterms)):
+	            a = meshterms[i].split(";")
+	            for j in range(len(a)):
+	                newMeSH.append(a[j].replace("*", ""))
+	    newMeSH = set(newMeSH)
+	    #check keywords occurrences in mesh terms
+	    for item in topic_keywords:
+	        if item in newMeSH:
+	            score_topic = score_topic + 1
+	    score = score + len(meshterms)*score_topic/10
+	accuracy = score/len(titles)
+	accuracy
+
     return accuracy
