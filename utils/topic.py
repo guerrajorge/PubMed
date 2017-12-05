@@ -61,8 +61,14 @@ def topic_modeling(dataset):
 
     # LDA
     # building model
-    lda = models.LdaModel(corpus_tfidf, id2word=dictionary, num_topics=10, alpha='auto', eval_every=5, iterations=100)
-    corpus_lda = lda[corpus_tfidf]
+    # number of topics = 26, 25, 5 based on perplexity and coherence scores
+	num_topics = 5
+	chunksize = 2000
+	passes = 20
+	iterations = 400
+	eval_every = None  # Don't evaluate model perplexity, takes too much time.
+	lda = models.LdaModel(corpus=corpus_tfidf, id2word=dictionary, chunksize=chunksize, alpha='auto', eta='auto', iterations=iterations, num_topics=num_topics, passes=passes, eval_every=eval_every)
+	corpus_lda = lda[corpus_tfidf]
     
     #saving and printing
     docs = []
@@ -212,13 +218,13 @@ def topic_modeling(dataset):
 
     # calculate accuracy using keyword occurrence
 	score = 0
-	for i in range(0,10):
+	for i in range(0,num_topics):
 	    score_topic = 0
 	    meshterms = list()
 	    newMeSH = list()
 	    topic_keywords = list()
 	    #get all keywords for this topic
-	    for k in range(0,10):
+	    for k in range(0,num_topics):
 	        topic_keywords.append(lda.show_topic(i)[k][0])
 	    #get all mesh terms for this topic
 	    for j in range(len(title_topic)):
@@ -234,8 +240,46 @@ def topic_modeling(dataset):
 	    for item in topic_keywords:
 	        if item in newMeSH:
 	            score_topic = score_topic + 1
-	    score = score + len(meshterms)*score_topic/10
+	    score = score + len(meshterms)*score_topic/num_topics
 	accuracy = score/len(titles)
-	accuracy
+
+
+	# # Training LDA
+	# # Set training parameters.
+	# num_topics = 5
+	# chunksize = 2000
+	# passes = 20
+	# iterations = 400
+	# eval_every = None  # Don't evaluate model perplexity, takes too much time.
+
+	# # calculating topic coherence
+	# while num_topics < 30:
+	#     #build LDA
+	#     model = models.LdaModel(corpus=corpus_tfidf, id2word=dictionary, chunksize=chunksize, alpha='auto', eta='auto', iterations=iterations,
+	#                             num_topics=num_topics, passes=passes, eval_every=eval_every)
+	#     top_topics = model.top_topics(corpus_tfidf)
+	#     # Average topic coherence is the sum of topic coherences of all topics, divided by the number of topics.
+	#     avg_topic_coherence = sum([t[1] for t in top_topics]) / num_topics
+	#     print(num_topics, avg_topic_coherence)
+	#     num_topics = num_topics + 1
+
+
+	# # calculating perplexity using model.bound()
+	# while num_topics < 30:
+	#     #build LDA
+	#     model = models.LdaModel(corpus=corpus_tfidf, id2word=dictionary, chunksize=chunksize, alpha='auto', eta='auto', iterations=iterations,
+	#                             num_topics=num_topics, passes=passes, eval_every=eval_every)
+	#     perplexity_score = model.bound(corpus=corpus_tfidf)
+	#     print(num_topics, perplexity_score)
+	#     num_topics = num_topics + 1
+
+	# # calculating perplexity using model.log_perplexity()
+	# while num_topics < 30:
+	#     #build LDA
+	#     model = models.LdaModel(corpus=corpus_tfidf, id2word=dictionary, chunksize=chunksize, alpha='auto', eta='auto', iterations=iterations,
+	#                             num_topics=num_topics, passes=passes, eval_every=eval_every)
+	#     perplex = model.log_perplexity(corpus_tfidf, total_docs=len(corpus_tfidf))
+	#     print(num_topics, perplex)
+	#     num_topics = num_topics + 1
 
     return accuracy
