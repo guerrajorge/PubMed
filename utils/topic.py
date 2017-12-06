@@ -21,6 +21,7 @@ def topic_modeling(dataset):
     # read data
     titles = dataset['title']
     # abstracts = dataset['abstracts']
+    mesh = dataset['MeSH']
     # corpus of documents
     # each consisting of only title, abstract, or paper
 
@@ -30,6 +31,10 @@ def topic_modeling(dataset):
         ' '.join([word for word in title.lower().split() if word not in stopwords.words('english')])
         for title in titles]
 
+    # remove stopwords in abstract
+    # text_nostopwords = [
+    #     ' '.join([word for word in abstract.lower().split() if word not in stopwords.words('english')])
+    #     for abstract in abstracts if str(abstract) != 'nan']
     # # remove punctuation
     # text_nopunc = []
     # for text in text_nostopwords:
@@ -87,7 +92,7 @@ def topic_modeling(dataset):
             j = j + 1
         article_topic[i].append((i, topic_id))
     
-    title_topic = list(zip(titles, article_topic))
+    title_topic = list(zip(abstracts, article_topic, mesh))
     
     # number of topics
     topic_list = []
