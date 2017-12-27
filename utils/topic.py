@@ -223,13 +223,13 @@ def topic_modeling(dataset):
 
     # calculate accuracy using keyword occurrence
 	score = 0
-	for i in range(0,num_topics):
+	for i in range(0, num_topics):
 	    score_topic = 0
 	    meshterms = list()
 	    newMeSH = list()
 	    topic_keywords = list()
 	    #get all keywords for this topic
-	    for k in range(0,num_topics):
+	    for k in range(0, 10):
 	        topic_keywords.append(lda.show_topic(i)[k][0])
 	    #get all mesh terms for this topic
 	    for j in range(len(title_topic)):
@@ -239,7 +239,7 @@ def topic_modeling(dataset):
 	        for i in range(len(meshterms)):
 	            a = meshterms[i].split(";")
 	            for j in range(len(a)):
-	                newMeSH.append(a[j].replace("*", ""))
+	                newMeSH.append(a[j].replace("*", "").replace("/", " "))
 	    newMeSH = set(newMeSH)
 	    #check keywords occurrences in mesh terms
 	    for item in topic_keywords:
