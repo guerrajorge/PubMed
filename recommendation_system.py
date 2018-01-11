@@ -12,7 +12,7 @@ from utils.topic import topic_modeling
 def obtain_descriptions():
 
     # get the description, related to the MESH, in the 2017MeshTree.csv File
-    mesh_tree_file_object = open(r'C:\Users\GUERRAMARJ\PycharmProjects\Pubmed\template\2017MeshTree.csv')
+    mesh_tree_file_object = open('template/2017MeshTree.csv')
     file_reader = csv.reader(mesh_tree_file_object, delimiter=',')
     mesh_description_dict = dict()
 
@@ -266,11 +266,10 @@ def main():
     # read the records from the file
     # dataset = pd.read_csv('record_results/titles_abstracts.csv')
 
-    topic_modeling(dataset=dataset)
+    # topic_modeling(dataset=dataset)
 
     pandas.io.formats.excel.header_style = None
     # contains all the metadata elements on the author level: Pubmed unique Identifier number(PMID), AuthorID (as a
-    # combination of the author’s last name, first name, and initials), institution: chop=0, Penn=1, Role: Chief Author
     # (CA) Ordinary Author (OA) or Principal Author (PA) and the author's affiliation
     author_record_df.to_excel('record_results/author_record.xlsx', sheet_name='author_record', index=False)
     # contains all the metadata elements on the paper level: Pubmed unique Identifier number(PMID), Title, Abstract,

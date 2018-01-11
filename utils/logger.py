@@ -16,13 +16,12 @@ class DispatchingFormatter:
 
 def logger_initialization(log_level):
 
-    log_level = log_level.upper()
-
     # logLevel = ['DEBUG', 'INFO', 'ERROR']
     # no logLevel, default to INFO
     if not log_level:
         logging.getLogger().setLevel(getattr(logging, 'INFO'))
     else:
+        log_level = log_level.upper()
         logging.getLogger().setLevel(getattr(logging, log_level))
 
     # not only log to a file but to stdout
@@ -52,9 +51,11 @@ def logger_initialization(log_level):
         'tab.debug.time': logging.Formatter("\t%(asctime)s - %(funcName)s - %(message)s", "%Y-%m-%d %H:%M:%S"),
         'tab.tab.debug.time': logging.Formatter("\t\t%(asctime)s - %(funcName)s - %(message)s", "%Y-%m-%d %H:%M:%S"),
         'tab.debug.time.line': logging.Formatter("\t%(asctime)s - %(funcName)s - %(message)s\n", "%Y-%m-%d %H:%M:%S"),
-        'tab.tab.debug.time.line': logging.Formatter("\t\t%(asctime)s - %(funcName)s - %(message)s\n", "%Y-%m-%d %H:%M:%S"),
+        'tab.tab.debug.time.line': logging.Formatter("\t\t%(asctime)s - %(funcName)s - %(message)s\n",
+                                                     "%Y-%m-%d %H:%M:%S"),
         'line.tab.debug.time': logging.Formatter("\n\t%(asctime)s - %(funcName)s - %(message)s", "%Y-%m-%d %H:%M:%S"),
-        'line.tab.tab.debug.time': logging.Formatter("\n\t\t%(asctime)s - %(funcName)s - %(message)s", "%Y-%m-%d %H:%M:%S"),
+        'line.tab.tab.debug.time': logging.Formatter("\n\t\t%(asctime)s - %(funcName)s - %(message)s",
+                                                     "%Y-%m-%d %H:%M:%S"),
     }
 
     handler = logging.StreamHandler(sys.stdout)
