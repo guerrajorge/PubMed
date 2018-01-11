@@ -140,33 +140,32 @@ def main():
     # import data from file
     logging.getLogger('regular').info('reading data from file')
 
-    # Entrez (http://www.ncbi.nlm.nih.gov/Entrez) is a data retrieval system that provides users access to NCBI’s
     # databases such as PubMed, GenBank, GEO, and many others
     # Use the mandatory email parameter so the NCBI can contact you if there is a proble
     Entrez.email = "guerramarj@email.chop.edu"     # Always tell NCBI who you are
-    # logging.getLogger('regular').info('searching pubmed for the CHOP and UPENN authors')
-    # handle = Entrez.esearch(db="pubmed", retmax=50000, idtype="esearch", mindate="2014/01/01", maxdate="2017/05/01",
-    #                         term="Perelman School of Medicine[Affiliation] OR Children's Hospital of "
-    #                              "Philadelphia[Affiliation] OR University of Pennsylvania School of "
-    #                              "Medicine[Affiliation] OR School of Medicine University of Pennsylvania[Affiliation]",
-    #                         usehistory="y")
-    # search_results = Entrez.read(handle)
-    # handle.close()
-    # # obtaining the list of relevant PMIDs
-    # id_list = search_results["IdList"]
-    #
-    # # get all the record based on the PMIDs
-    # logging.getLogger('regular').info('getting relevant authors\' records based on PMIDs')
-    # fetch_records_handle = Entrez.efetch(db="pubmed", id=id_list, retmode="text", rettype="medline")
-    # # need to read all the data from the handle and store in a file because if we just read line by line from the
-    # # generator and the internet connection is not strong, then we run into http errors:
-    # # http.client.IncompleteRead: IncompleteRead(0 bytes read)
-    # logging.getLogger('regular').info('storing authors\' records on local file')
-    # with open("results.xml", "w") as out_handle:
-    #     out_handle.write(fetch_records_handle.read())
-    # # the results are now in the results.xml file and the original handle has had all of its data extracted
-    # # (so we close it)
-    # fetch_records_handle.close()
+    logging.getLogger('regular').info('searching pubmed for the CHOP and UPENN authors')
+    handle = Entrez.esearch(db="pubmed", retmax=50000, idtype="esearch", mindate="2014/01/01", maxdate="2017/05/01",
+                            term="Perelman School of Medicine[Affiliation] OR Children's Hospital of "
+                                 "Philadelphia[Affiliation] OR University of Pennsylvania School of "
+                                 "Medicine[Affiliation] OR School of Medicine University of Pennsylvania[Affiliation]",
+                            usehistory="y")
+    search_results = Entrez.read(handle)
+    handle.close()
+    # obtaining the list of relevant PMIDs
+    id_list = search_results["IdList"]
+
+    # get all the record based on the PMIDs
+    logging.getLogger('regular').info('getting relevant authors\' records based on PMIDs')
+    fetch_records_handle = Entrez.efetch(db="pubmed", id=id_list, retmode="text", rettype="medline")
+    # need to read all the data from the handle and store in a file because if we just read line by line from the
+    # generator and the internet connection is not strong, then we run into http errors:
+    # http.client.IncompleteRead: IncompleteRead(0 bytes read)
+    logging.getLogger('regular').info('storing authors\' records on local file')
+    with open("results.xml", "w") as out_handle:
+        out_handle.write(fetch_records_handle.read())
+    # the results are now in the results.xml file and the original handle has had all of its data extracted
+    # (so we close it)
+    fetch_records_handle.close()
 
     logging.getLogger('regular').info('reading result files')
     records_handle = open("results.xml")
@@ -176,7 +175,6 @@ def main():
     mesh_description_dict = obtain_descriptions()
 
     # contains all the metadata elements on the author level: Pubmed unique Identifier number(PMID), AuthorID (as a
-    # combination of the author’s last name, first name, and initials), institution: chop=0, Penn=1, Role: Chief Author
     # (CA) Ordinary Author (OA) or Principal Author (PA) and the author's affiliation
     author_record_df = pd.DataFrame(columns=['PMID', 'AuthorID', 'Author CHOP', 'Author PENN', 'ROLE', 'Affiliation'])
     # contains all the metadata elements on the paper level: Pubmed unique Identifier number(PMID), Title, Abstract,
